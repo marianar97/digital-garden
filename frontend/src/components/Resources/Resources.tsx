@@ -40,7 +40,7 @@ function convertApiResource(apiResource: ApiResource): Resource {
   return {
     ...apiResource,
     image: apiResource.image || '/placeholder.png', // Default image if none provided
-    tags: (apiResource.tags || []).map(tag => tag as TagType).filter(tag => Object.values(TagType).includes(tag)),
+    tags: (apiResource.tags || []).map((tag: string) => tag as TagType).filter((tag: TagType) => Object.values(TagType).includes(tag)),
     type: apiResource.type as ResourceType,
     createdAt: new Date(apiResource.createdAt),
     updatedAt: new Date(apiResource.updatedAt),

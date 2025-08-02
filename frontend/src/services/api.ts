@@ -7,6 +7,7 @@ export interface ApiResource {
   url: string;
   description?: string;
   image?: string;
+  tags?: string[]; // Add this line
   createdAt: Date;
   updatedAt: Date;
 }
