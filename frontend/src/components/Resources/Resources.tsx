@@ -1,11 +1,13 @@
 import ResourceSelector from "../Search/ResourceSelector";
 import ResourceGrid from "./ResourceGrid";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { apiService, ApiResource } from "../../services/api";
 
 enum ResourceType {
-  VIDEO = "video",
-  BOOK = "book",
-  TOOL = "tool",
+  VIDEO = "Video",
+  BOOK = "Book", 
+  TOOL = "Tool",
+  ARTICLE = "Article",
 }
 
 enum TagType {
@@ -29,6 +31,20 @@ interface Resource {
   url: string;
   tags: TagType[];
   type: ResourceType;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+// Helper function to convert API resource to frontend resource
+function convertApiResource(apiResource: ApiResource): Resource {
+  return {
+    ...apiResource,
+    image: apiResource.image || '/placeholder.png', // Default image if none provided
+    tags: [], // API doesn't have tags yet, default to empty array
+    type: apiResource.type as ResourceType,
+    createdAt: new Date(apiResource.createdAt),
+    updatedAt: new Date(apiResource.updatedAt),
+  };
 }
 
 // Default resources if none are provided
@@ -161,20 +177,48 @@ const defaultResources: Resource[] = [
 export default function Resources({
   SampleResources = defaultResources,
 }: {
-  SampleResources?: any[];
+  SampleResources?: Resource[];
 }) {
-  const [filteredResources, setFilteredResources] = useState(SampleResources);
+  const [resources, setResources] = useState<Resource[]>(SampleResources);
+  const [filteredResources, setFilteredResources] = useState<Resource[]>(SampleResources);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch resources from API on component mount
+  useEffect(() => {
+    const fetchResources = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const apiResources = await apiService.getResources();
+        const convertedResources = apiResources.map(convertApiResource);
+        setResources(convertedResources);
+        setFilteredResources(convertedResources);
+      } catch (err) {
+        console.error('Failed to fetch resources:', err);
+        setError('Failed to load resources from server. Using default resources.');
+        // Keep using default resources on error
+        setResources(SampleResources);
+        setFilteredResources(SampleResources);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResources();
+  }, [SampleResources]);
 
   // Handle resource type change
   const handleTypeChange = (type: string) => {
-    const tmpResources = SampleResources.filter((resource: any) => {
+    const tmpResources = resources.filter((resource: Resource) => {
       if (!type || type === "all") return true;
       return resource.type === type;
     });
     setFilteredResources(tmpResources);
   };
+  
   const handleSearch = (search: string) => {
-    const tmpResources = SampleResources.filter((resource: any) => {
+    const tmpResources = resources.filter((resource: Resource) => {
       if (!search || search === "") return true;
       return resource.title.toLowerCase().includes(search.toLowerCase());
     });
@@ -182,7 +226,7 @@ export default function Resources({
   };
 
   const handleTagChange = (selectedTags: TagType[]) => {
-    const tmpResources = SampleResources.filter((resource: any) => {
+    const tmpResources = resources.filter((resource: Resource) => {
       if (selectedTags.length === 0) return true;
       // Check if resource has ALL selected tags (AND logic)
       return selectedTags.every(tag => resource.tags.includes(tag));
@@ -192,13 +236,26 @@ export default function Resources({
 
   return (
     <div className="flex flex-col w-full md:w-[90%] border-none rounded-lg items-start ">
+      {error && (
+        <div className="w-full mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+          {error}
+        </div>
+      )}
+      
       <ResourceSelector
         onTypeChange={handleTypeChange}
         onSearch={handleSearch}
         onTagChange={handleTagChange}
         tags={Object.values(TagType)}
       />
-      <ResourceGrid resources={filteredResources} />
+      
+      {loading ? (
+        <div className="w-full flex justify-center items-center py-8">
+          <div className="text-gray-500">Loading resources...</div>
+        </div>
+      ) : (
+        <ResourceGrid resources={filteredResources} />
+      )}
     </div>
   );
 }
