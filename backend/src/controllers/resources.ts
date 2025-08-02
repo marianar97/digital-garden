@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { FirestoreService } from '../services/firestore.js';
+import { LinkPreviewService } from '../services/linkpreview.js';
 import { ResourceFormData } from '../types/index.js';
 
 export class ResourceController {
@@ -31,7 +32,16 @@ export class ResourceController {
         });
       }
 
-      const newResource = await FirestoreService.createResource({ title, type, url });
+      // Fetch link preview data
+      const previewData = await LinkPreviewService.getPreview(url);
+      
+      const newResource = await FirestoreService.createResource({ 
+        title, 
+        type, 
+        url,
+        description: previewData.description,
+        image: previewData.image
+      });
       
       res.status(201).json({
         message: 'Resource created successfully',

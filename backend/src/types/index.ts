@@ -8,4 +8,6 @@ export interface StoredResource extends ResourceFormData {
   id: string;
   createdAt: Date;
   updatedAt: Date;
+  description?: string;
+  image?: string;
 }

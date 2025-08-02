@@ -4,7 +4,7 @@ import { ResourceFormData, StoredResource } from '../types/index.js';
 const COLLECTION_NAME = 'resources';
 
 export class FirestoreService {
-  static async createResource(resourceData: ResourceFormData): Promise<StoredResource> {
+  static async createResource(resourceData: ResourceFormData & { description?: string; image?: string }): Promise<StoredResource> {
     const timestamp = new Date();
     const docRef = db.collection(COLLECTION_NAME).doc();
     
