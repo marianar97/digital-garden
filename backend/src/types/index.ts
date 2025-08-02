@@ -2,6 +2,7 @@ export interface ResourceFormData {
   title: string;
   type: 'Video' | 'Article' | 'Book' | 'Tool';
   url: string;
+  tags?: string[];
 }
 
 export interface StoredResource extends ResourceFormData {
@@ -10,4 +11,5 @@ export interface StoredResource extends ResourceFormData {
   updatedAt: Date;
   description?: string;
   image?: string;
+  tags?: string[];
 }

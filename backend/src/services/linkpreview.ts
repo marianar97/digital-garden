@@ -15,6 +15,7 @@ export class LinkPreviewService {
     if (!this.API_KEY) {
       throw new Error('LINKPREVIEW_API_KEY environment variable is not set');
     }
+    console.log('API_KEY', this.API_KEY);
 
     try {
       const response = await axios.get(this.API_URL, {
@@ -35,20 +36,17 @@ export class LinkPreviewService {
       console.error('Error fetching link preview:', error);
       
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          throw new Error('Invalid LinkPreview API key');
-        }
-        if (error.response?.status === 429) {
-          throw new Error('LinkPreview API rate limit exceeded');
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          console.warn('LinkPreview API authentication failed - check API key in .env file');
+        } else if (error.response?.status === 429) {
+          console.warn('LinkPreview API rate limit exceeded');
+        } else {
+          console.warn('LinkPreview API error:', error.response?.status, error.message);
         }
       }
       
-      return {
-        title: undefined,
-        description: undefined,
-        image: undefined,
-        url: url
-      };
+      // Return empty object to avoid undefined values in Firestore
+      return {};
     }
   }
 }

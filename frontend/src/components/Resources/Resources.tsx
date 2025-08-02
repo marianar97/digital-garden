@@ -5,7 +5,7 @@ import { apiService, ApiResource } from "../../services/api";
 
 enum ResourceType {
   VIDEO = "Video",
-  BOOK = "Book", 
+  BOOK = "Book",
   TOOL = "Tool",
   ARTICLE = "Article",
 }
@@ -40,7 +40,7 @@ function convertApiResource(apiResource: ApiResource): Resource {
   return {
     ...apiResource,
     image: apiResource.image || '/placeholder.png', // Default image if none provided
-    tags: [], // API doesn't have tags yet, default to empty array
+    tags: (apiResource.tags || []).map(tag => tag as TagType).filter(tag => Object.values(TagType).includes(tag)),
     type: apiResource.type as ResourceType,
     createdAt: new Date(apiResource.createdAt),
     updatedAt: new Date(apiResource.updatedAt),
@@ -191,8 +191,10 @@ export default function Resources({
       setError(null);
       try {
         const apiResources = await apiService.getResources();
+        console.log('apiResources', apiResources);
         const convertedResources = apiResources.map(convertApiResource);
         setResources(convertedResources);
+        console.log('convertedResources', convertedResources);
         setFilteredResources(convertedResources);
       } catch (err) {
         console.error('Failed to fetch resources:', err);
@@ -216,7 +218,7 @@ export default function Resources({
     });
     setFilteredResources(tmpResources);
   };
-  
+
   const handleSearch = (search: string) => {
     const tmpResources = resources.filter((resource: Resource) => {
       if (!search || search === "") return true;
@@ -241,14 +243,14 @@ export default function Resources({
           {error}
         </div>
       )}
-      
+
       <ResourceSelector
         onTypeChange={handleTypeChange}
         onSearch={handleSearch}
         onTagChange={handleTagChange}
         tags={Object.values(TagType)}
       />
-      
+
       {loading ? (
         <div className="w-full flex justify-center items-center py-8">
           <div className="text-gray-500">Loading resources...</div>

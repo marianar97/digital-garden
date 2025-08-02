@@ -1,6 +1,14 @@
 import { useState } from "react";
 import SplitText from "./TextAnimations/SplitText/SplitText";
 import { InteractiveHoverButton } from "./magicui/interactive-hover-button";
+import TagSelector from "./Search/TagSelector";
+
+// Tag options for the form
+const availableTags = [
+  "History", "Growth", "Determination", "Entrepreneurship", 
+  "Communication", "Productivity", "Neurodiversity", "Startup", 
+  "Programming", "Curiosity"
+];
 import {
   NestedDialog,
   NestedDialogContent,
@@ -17,11 +25,16 @@ export default function HeroTitle() {
   const [formData, setFormData] = useState({
     title: "",
     type: "",
-    url: ""
+    url: "",
+    tags: [] as string[]
   });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleTagChange = (selectedTags: string[]) => {
+    setFormData(prev => ({ ...prev, tags: selectedTags }));
   };
 
   const handleSubmit = async () => {
@@ -37,13 +50,14 @@ export default function HeroTitle() {
         body: JSON.stringify({
           title: formData.title,
           type: formData.type.charAt(0).toUpperCase() + formData.type.slice(1),
-          url: formData.url
+          url: formData.url,
+          tags: formData.tags
         }),
       });
 
       if (response.ok) {
         setSubmitMessage("🌱 Resource planted successfully!");
-        setFormData({ title: "", type: "", url: "" });
+        setFormData({ title: "", type: "", url: "", tags: [] });
         setTimeout(() => {
           setDialogOpen(false);
           setSubmitMessage("");
@@ -130,6 +144,17 @@ export default function HeroTitle() {
                 <option value="Book">Book</option>
                 <option value="Tool">Tool</option>
               </select>
+            </div>
+
+            {/* Tags Selector */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Tags (optional):
+              </label>
+              <TagSelector 
+                onTagChange={handleTagChange}
+                tags={availableTags}
+              />
             </div>
 
             {/* URL Input */}
