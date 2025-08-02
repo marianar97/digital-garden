@@ -26,7 +26,7 @@ export default function TagSelector({ onTagChange, tags }: { onTagChange: (tags:
           onClick={() => handleTagClick(tag)} 
           className={`cursor-pointer rounded-full px-2 py-1 border border-gray-200 transition-colors duration-200 ${
             selectedTags.includes(tag) 
-              ? 'bg-purple-600 text-white border-purple-600' 
+              ? 'bg-green-800 text-white border-green-800' 
               : 'hover:bg-gray-100'
           }`}
         >

@@ -38,7 +38,7 @@ export default function ResourceCard({
             {tags.map((tag) => (
               <Badge
                 key={tag}
-                className="bg-purple-600/90 text-white hover:bg-purple-700 px-3 py-0.5 text-xs font-medium backdrop-blur-sm transform transition-transform duration-300 group-hover:tran slate-y-[-4px]"
+                className="bg-green-800/90 text-white hover:bg-green-900 px-3 py-0.5 text-xs font-medium backdrop-blur-sm transform transition-transform duration-300 group-hover:translate-y-[-4px]"
               >
                 {tag}
               </Badge>
