@@ -1,7 +1,5 @@
 import HeroTitle from "./components/HeroTitle";
 import Resources from "./components/Resources/Resources";
-import { useState } from "react";
-import { motion } from "framer-motion";
 
 function App() {
   const [showResources, setShowResources] = useState(false);

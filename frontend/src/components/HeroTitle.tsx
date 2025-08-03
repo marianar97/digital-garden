@@ -19,7 +19,7 @@ import {
   NestedDialogTitle,
 } from "./ui/nested-dialog";
 
-export default function HeroTitle() {
+export default function HeroTitle({ onLetterAnimationComplete }: { onLetterAnimationComplete: () => void }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
@@ -77,13 +77,14 @@ export default function HeroTitle() {
 
   const handleAnimationComplete = useCallback(() => {
     setShowButton(true);
+    onLetterAnimationComplete();
   }, []);
 
   const animationFrom = useMemo(() => ({ opacity: 0, y: 40 }), []);
   const animationTo = useMemo(() => ({ opacity: 1, y: 0 }), []);
 
   return (
-    <div className="my-8 flex flex-col items-center justify-center space-y-8">
+    <div className="my-8 flex flex-col items-center justify-center space-y-4">
       {/* Main title - responsive sizing */}
       <motion.p
         initial={{ y: 10, opacity: 0 }}
@@ -99,8 +100,8 @@ export default function HeroTitle() {
         <SplitText
           text="🌱 Digital Garden"
           className="text-5xl md:text-7xl font-semibold text-center"
-          delay={100}
-          duration={2}
+          delay={50}
+          duration={1}
           ease="power3.out"
           splitType="words"
           from={animationFrom}
@@ -127,7 +128,6 @@ export default function HeroTitle() {
               className="text-base md:text-lg font-medium bg-[rgb(109,186,24)] text-white hover:bg-[rgb(49,83,13)] hover:border-[rgb(49,83,13)] shadow-lg hover:shadow-xl transition-colors duration-300 margin-2"
               onClick={() => setDialogOpen(true)}
             >
-
               Plant your own seed
             </InteractiveHoverButton>
           </motion.div>

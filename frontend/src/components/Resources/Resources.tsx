@@ -1,7 +1,11 @@
 import ResourceSelector from "../Search/ResourceSelector";
 import ResourceGrid from "./ResourceGrid";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { apiService, ApiResource } from "../../services/api";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 enum ResourceType {
   VIDEO = "Video",
@@ -183,6 +187,11 @@ export default function Resources({
   const [filteredResources, setFilteredResources] = useState<Resource[]>(SampleResources);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const selectorRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
 
   // Fetch resources from API on component mount
   useEffect(() => {
@@ -209,6 +218,79 @@ export default function Resources({
 
     fetchResources();
   }, [SampleResources]);
+
+  // Initialize entrance animations on mount
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const tl = gsap.timeline();
+    
+    // Animate container with fade in and slight slide up
+    tl.fromTo(containerRef.current, 
+      { 
+        opacity: 0, 
+        y: 30,
+        scale: 0.98
+      },
+      { 
+        opacity: 1, 
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        ease: "power2.out"
+      }
+    );
+
+    return () => {
+      tl.kill();
+    };
+  }, []);
+
+  // Animate components when data changes
+  useEffect(() => {
+    if (!selectorRef.current || !gridRef.current) return;
+
+    const tl = gsap.timeline();
+    
+    // Stagger animation for selector and grid
+    tl.fromTo([selectorRef.current, gridRef.current],
+      {
+        opacity: 0,
+        y: 20
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        stagger: 0.2,
+        ease: "power2.out"
+      }
+    );
+
+    return () => {
+      tl.kill();
+    };
+  }, [loading, filteredResources]);
+
+  // Animate error message
+  useEffect(() => {
+    if (!errorRef.current || !error) return;
+
+    gsap.fromTo(errorRef.current,
+      {
+        opacity: 0,
+        y: -10,
+        scale: 0.95
+      },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)"
+      }
+    );
+  }, [error]);
 
   // Handle resource type change
   const handleTypeChange = (type: string) => {
@@ -237,26 +319,36 @@ export default function Resources({
   };
 
   return (
-    <div className="flex flex-col w-full md:w-[90%] border-none rounded-lg items-start ">
+    <div 
+      ref={containerRef}
+      className="flex flex-col w-full md:w-[90%] border-none rounded-lg items-start"
+    >
       {error && (
-        <div className="w-full mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+        <div 
+          ref={errorRef}
+          className="w-full mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded"
+        >
           {error}
         </div>
       )}
 
-      <ResourceSelector
-        onTypeChange={handleTypeChange}
-        onSearch={handleSearch}
-        onTagChange={handleTagChange}
-        tags={Object.values(TagType)}
-      />
+      <div ref={selectorRef}>
+        <ResourceSelector
+          onTypeChange={handleTypeChange}
+          onSearch={handleSearch}
+          onTagChange={handleTagChange}
+          tags={Object.values(TagType)}
+        />
+      </div>
 
       {loading ? (
         <div className="w-full flex justify-center items-center py-8">
-          <div className="text-gray-500">Loading resources...</div>
+          <div className="text-gray-500 animate-pulse">Loading resources...</div>
         </div>
       ) : (
-        <ResourceGrid resources={filteredResources} />
+        <div ref={gridRef}>
+          <ResourceGrid resources={filteredResources} />
+        </div>
       )}
     </div>
   );
