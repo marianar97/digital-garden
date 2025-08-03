@@ -224,11 +224,12 @@ export default function Resources({
   useEffect(() => {
     if (hasAnimated.current || loading) return;
 
+    // Set hasAnimated immediately to prevent double animations
+    hasAnimated.current = true;
+
     // Use setTimeout to ensure DOM is fully rendered
     const timeoutId = setTimeout(() => {
       if (!containerRef.current || !selectorRef.current || !gridRef.current) return;
-
-      hasAnimated.current = true;
 
       const tl = gsap.timeline();
       
