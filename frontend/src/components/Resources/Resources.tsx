@@ -332,7 +332,7 @@ export default function Resources({
         </div>
       )}
 
-      <div ref={selectorRef} className="w-full">
+      <div ref={selectorRef} className="w-full relative z-50">
         <ResourceSelector
           onTypeChange={handleTypeChange}
           onSearch={handleSearch}
@@ -346,7 +346,7 @@ export default function Resources({
           <div className="text-gray-500 animate-pulse">Loading resources...</div>
         </div>
       ) : (
-        <div ref={gridRef} className="w-full">
+        <div ref={gridRef} className="w-full relative z-10">
           <ResourceGrid resources={filteredResources} />
         </div>
       )}

@@ -56,7 +56,7 @@ export default function Dropdown({ onTypeChange, initialSelected = null }: Dropd
   }, []);
 
   return (
-    <div className="relative w-full md:w-fit inline-block" ref={dropdownRef}>
+    <div className="relative w-full md:w-fit inline-block z-50" ref={dropdownRef}>
       <button
         id="menu-button"
         type="button"
@@ -85,11 +85,10 @@ export default function Dropdown({ onTypeChange, initialSelected = null }: Dropd
         tabIndex={-1}
         aria-labelledby="menu-button"
         aria-orientation="vertical"
-        className={`absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden transition-all duration-200 ease-in-out transform ${
-          isOpen
-            ? "opacity-100 scale-100"
-            : "opacity-0 scale-95 pointer-events-none"
-        }`}
+        className={`absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden transition-all duration-200 ease-in-out transform ${isOpen
+          ? "opacity-100 scale-100"
+          : "opacity-0 scale-95 pointer-events-none"
+          }`}
       >
         <div role="none" className="py-1">
           {/* Active: "bg-gray-100 text-gray-900 outline-hidden", Not Active: "text-gray-700" */}
@@ -105,11 +104,10 @@ export default function Dropdown({ onTypeChange, initialSelected = null }: Dropd
                   e.preventDefault();
                   handleItemClick(item.id);
                 }}
-                className={`block px-4 py-2 text-sm ${
-                  item.id === selected
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-700"
-                } hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150`}
+                className={`block px-4 py-2 text-sm ${item.id === selected
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-700"
+                  } hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150`}
               >
                 {item.text}
               </a>
@@ -129,11 +127,10 @@ export default function Dropdown({ onTypeChange, initialSelected = null }: Dropd
                   type="submit"
                   role="menuitem"
                   tabIndex={-1}
-                  className={`block w-full px-4 py-2 text-left text-sm ${
-                    item.id === selected
-                      ? "bg-gray-100 text-gray-900"
-                      : "text-gray-700"
-                  } hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150`}
+                  className={`block w-full px-4 py-2 text-left text-sm ${item.id === selected
+                    ? "bg-gray-100 text-gray-900"
+                    : "text-gray-700"
+                    } hover:bg-gray-100 hover:text-gray-900 transition-colors duration-150`}
                 >
                   {item.text}
                 </button>

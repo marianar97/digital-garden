@@ -5,7 +5,7 @@ export default function TagSelector({ onTagChange, tags }: { onTagChange: (tags:
 
   const handleTagClick = (tag: any) => {
     let newSelectedTags: any[];
-    
+
     if (selectedTags.includes(tag)) {
       // Remove tag if already selected
       newSelectedTags = selectedTags.filter(t => t !== tag);
@@ -13,7 +13,7 @@ export default function TagSelector({ onTagChange, tags }: { onTagChange: (tags:
       // Add tag if not selected
       newSelectedTags = [...selectedTags, tag];
     }
-    
+
     setSelectedTags(newSelectedTags);
     onTagChange(newSelectedTags);
   };
@@ -21,14 +21,13 @@ export default function TagSelector({ onTagChange, tags }: { onTagChange: (tags:
   return (
     <div className="flex flex-row gap-2 flex-wrap mb-5 items-start justify-start ">
       {tags.map((tag) => (
-        <div 
-          key={tag} 
-          onClick={() => handleTagClick(tag)} 
-          className={`cursor-pointer rounded-full px-2 py-1 border border-gray-200 transition-colors duration-200 ${
-            selectedTags.includes(tag) 
-              ? 'bg-green-800 text-white border-green-800' 
-              : 'hover:bg-gray-100'
-          }`}
+        <div
+          key={tag}
+          onClick={() => handleTagClick(tag)}
+          className={`cursor-pointer rounded-full px-2 py-1 border border-gray-200 transition-colors duration-200 ${selectedTags.includes(tag)
+            ? 'bg-green-800 text-white border-green-800'
+            : 'hover:bg-gray-100'
+            }`}
         >
           {tag}
         </div>
