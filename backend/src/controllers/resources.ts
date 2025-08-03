@@ -4,7 +4,7 @@ import { LinkPreviewService } from '../services/linkpreview.js';
 import { ResourceFormData } from '../types/index.js';
 
 export class ResourceController {
-  static async createResource(req: Request, res: Response) {
+  static async createResource(req: Request, res: Response): Promise<Response | void> {
     try {
       const { title, type, url, tags }: ResourceFormData = req.body;
 
@@ -78,7 +78,7 @@ export class ResourceController {
     }
   }
 
-  static async getResources(req: Request, res: Response) {
+  static async getResources(req: Request, res: Response): Promise<Response | void> {
     try {
       const resources = await FirestoreService.getAllResources();
       res.json(resources);
