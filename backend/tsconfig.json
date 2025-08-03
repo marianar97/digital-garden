@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "lib": ["ES2020"],
+    "types": ["node"],  // Add this line
     "declaration": true,
     "sourceMap": true
   },
