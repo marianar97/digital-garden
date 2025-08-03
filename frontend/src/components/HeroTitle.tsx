@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import SplitText from "./TextAnimations/SplitText/SplitText";
 import { InteractiveHoverButton } from "./magicui/interactive-hover-button";
 import TagSelector from "./Search/TagSelector";
+import { motion } from "framer-motion";
 
 // Tag options for the form
 const availableTags = [
-  "History", "Growth", "Determination", "Entrepreneurship", 
-  "Communication", "Productivity", "Neurodiversity", "Startup", 
+  "History", "Growth", "Determination", "Entrepreneurship",
+  "Communication", "Productivity", "Neurodiversity", "Startup",
   "Programming", "Curiosity"
 ];
 import {
@@ -28,6 +29,7 @@ export default function HeroTitle() {
     url: "",
     tags: [] as string[]
   });
+  const [showButton, setShowButton] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -73,33 +75,63 @@ export default function HeroTitle() {
     }
   };
 
+  const handleAnimationComplete = useCallback(() => {
+    setShowButton(true);
+  }, []);
+
+  const animationFrom = useMemo(() => ({ opacity: 0, y: 40 }), []);
+  const animationTo = useMemo(() => ({ opacity: 1, y: 0 }), []);
+
   return (
     <div className="my-8 flex flex-col items-center justify-center space-y-8">
       {/* Main title - responsive sizing */}
-      <SplitText
-        text="🌱 Digital Garden"
-        className="text-5xl md:text-7xl font-semibold text-center"
-        delay={100}
-        duration={2}
-        ease="power3.out"
-        splitType="words"
-        from={{ opacity: 0, y: 40 }}
-        to={{ opacity: 1, y: 0 }}
-        threshold={0.1}
-        rootMargin="-100px"
-        textAlign="center"
-      />
+      <motion.p
+        initial={{ y: 10, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true }}
+        style={{
+          width: "100%",
+          maxWidth: "100%",
+          overflow: "hidden",
+          marginBottom: "20px",
+        }}
+      >
+        <SplitText
+          text="🌱 Digital Garden"
+          className="text-5xl md:text-7xl font-semibold text-center"
+          delay={100}
+          duration={2}
+          ease="power3.out"
+          splitType="words"
+          from={animationFrom}
+          to={animationTo}
+          threshold={0.1}
+          rootMargin="-100px"
+          textAlign="center"
+          onLetterAnimationComplete={handleAnimationComplete}
+        />
+      </motion.p>
 
       {/* Subtitle */}
-      <div className="text-center max-w-2xl">
+      <div className="text-center max-w-2xl ">
 
         {/* Interactive CTA Button */}
-        <InteractiveHoverButton
-          className="text-base md:text-lg font-medium bg-[rgb(109,186,24)] text-white hover:bg-[rgb(49,83,13)] hover:border-[rgb(49,83,13)] shadow-lg hover:shadow-xl transition-colors duration-300"
-          onClick={() => setDialogOpen(true)}
-        >
-          Plant your own seed
-        </InteractiveHoverButton>
+        {showButton && (
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            viewport={{ once: true }}
+          >
+            <InteractiveHoverButton
+              className="text-base md:text-lg font-medium bg-[rgb(109,186,24)] text-white hover:bg-[rgb(49,83,13)] hover:border-[rgb(49,83,13)] shadow-lg hover:shadow-xl transition-colors duration-300 margin-2"
+              onClick={() => setDialogOpen(true)}
+            >
+
+              Plant your own seed
+            </InteractiveHoverButton>
+          </motion.div>
+        )}
       </div>
 
       <NestedDialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -151,7 +183,7 @@ export default function HeroTitle() {
               <label className="text-sm font-medium">
                 Tags (optional):
               </label>
-              <TagSelector 
+              <TagSelector
                 onTagChange={handleTagChange}
                 tags={availableTags}
               />
@@ -198,6 +230,6 @@ export default function HeroTitle() {
           </NestedDialogFooter>
         </NestedDialogContent>
       </NestedDialog>
-    </div>
+    </div >
   );
 }
