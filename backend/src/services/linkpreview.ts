@@ -15,7 +15,6 @@ export class LinkPreviewService {
     if (!this.API_KEY) {
       throw new Error('LINKPREVIEW_API_KEY environment variable is not set');
     }
-    console.log('API_KEY', this.API_KEY);
 
     try {
       const response = await axios.get(this.API_URL, {
@@ -25,7 +24,7 @@ export class LinkPreviewService {
         },
         timeout: 10000
       });
-
+      console.log('response', response.data);
       return {
         title: response.data.title,
         description: response.data.description,
