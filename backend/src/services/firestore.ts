@@ -21,6 +21,6 @@ export class FirestoreService {
 
   static async getAllResources(): Promise<StoredResource[]> {
     const snapshot = await db.collection(COLLECTION_NAME).get();
-    return snapshot.docs.map(doc => doc.data() as StoredResource);
+    return snapshot.docs.map((doc: any) => doc.data() as StoredResource);
   }
 }

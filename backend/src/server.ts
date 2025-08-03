@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { ResourceController } from './controllers/resources.js';
 
@@ -19,7 +19,7 @@ app.post('/api/resources', ResourceController.createResource);
 app.get('/api/resources', ResourceController.getResources);
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
