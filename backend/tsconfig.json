@@ -11,8 +11,8 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "lib": ["ES2020"],
-    // Remove the "types" line entirely
+    "lib": ["ES2020", "DOM"],
+    "types": ["node"],
     "declaration": true,
     "sourceMap": true
   },
