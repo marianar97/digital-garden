@@ -31,6 +31,10 @@ export default function ResourceCard({
             src={image}
             alt={`${title} - ${description}`}
             className="w-full h-[180px] object-cover transition-transform duration-500 group-hover:scale-110"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = '/placeholder.png';
+            }}
           />
 
           {/* Badges - Positioned on top of the image */}
