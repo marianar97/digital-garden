@@ -192,6 +192,7 @@ export default function Resources({
   const selectorRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
+  const hasAnimated = useRef(false);
 
   // Fetch resources from API on component mount
   useEffect(() => {
@@ -219,58 +220,54 @@ export default function Resources({
     fetchResources();
   }, [SampleResources]);
 
-  // Initialize entrance animations on mount
+  // Initialize entrance animations on mount - only once
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (hasAnimated.current || loading) return;
 
-    const tl = gsap.timeline();
-    
-    // Animate container with fade in and slight slide up
-    tl.fromTo(containerRef.current, 
-      { 
-        opacity: 0, 
-        y: 30,
-        scale: 0.98
-      },
-      { 
-        opacity: 1, 
-        y: 0,
-        scale: 1,
-        duration: 0.8,
-        ease: "power2.out"
-      }
-    );
+    // Use setTimeout to ensure DOM is fully rendered
+    const timeoutId = setTimeout(() => {
+      if (!containerRef.current || !selectorRef.current || !gridRef.current) return;
+
+      hasAnimated.current = true;
+
+      const tl = gsap.timeline();
+      
+      // Animate container with fade in and slight slide up
+      tl.fromTo(containerRef.current, 
+        { 
+          opacity: 0, 
+          y: 30,
+          scale: 0.98
+        },
+        { 
+          opacity: 1, 
+          y: 0,
+          scale: 1,
+          duration: 0.8,
+          ease: "power2.out"
+        }
+      )
+      // Then stagger animation for selector and grid
+      .fromTo([selectorRef.current, gridRef.current],
+        {
+          opacity: 0,
+          y: 20
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.2,
+          ease: "power2.out"
+        },
+        "-=0.3" // Start slightly before container animation finishes
+      );
+    }, 0);
 
     return () => {
-      tl.kill();
+      clearTimeout(timeoutId);
     };
-  }, []);
-
-  // Animate components when data changes
-  useEffect(() => {
-    if (!selectorRef.current || !gridRef.current) return;
-
-    const tl = gsap.timeline();
-    
-    // Stagger animation for selector and grid
-    tl.fromTo([selectorRef.current, gridRef.current],
-      {
-        opacity: 0,
-        y: 20
-      },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        stagger: 0.2,
-        ease: "power2.out"
-      }
-    );
-
-    return () => {
-      tl.kill();
-    };
-  }, [loading, filteredResources]);
+  }, [loading]); // Only trigger when loading state changes
 
   // Animate error message
   useEffect(() => {
@@ -296,7 +293,15 @@ export default function Resources({
   const handleTypeChange = (type: string) => {
     const tmpResources = resources.filter((resource: Resource) => {
       if (!type || type === "all") return true;
-      return resource.type === type;
+      // Map dropdown values to enum values
+      const typeMap: { [key: string]: ResourceType } = {
+        "video": ResourceType.VIDEO,
+        "book": ResourceType.BOOK,
+        "tool": ResourceType.TOOL,
+        "article": ResourceType.ARTICLE,
+      };
+      const mappedType = typeMap[type.toLowerCase()];
+      return resource.type === mappedType;
     });
     setFilteredResources(tmpResources);
   };
