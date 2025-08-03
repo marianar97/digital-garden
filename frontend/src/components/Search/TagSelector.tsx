@@ -18,6 +18,7 @@ export default function TagSelector({ onTagChange, tags }: { onTagChange: (tags:
     onTagChange(newSelectedTags);
   };
 
+
   return (
     <div className="flex flex-row gap-2 flex-wrap mb-5 items-start justify-start ">
       {tags.map((tag) => (
