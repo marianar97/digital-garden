@@ -1,5 +1,5 @@
 import { db } from '../config/firebase.js';
-import { ResourceFormData, StoredResource } from '../types/index.js';
+import type { ResourceFormData, StoredResource } from '../types/index.js';
 
 const COLLECTION_NAME = 'resources';
 

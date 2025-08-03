@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { FirestoreService } from '../services/firestore.js';
 import { LinkPreviewService } from '../services/linkpreview.js';
-import { ResourceFormData } from '../types/index.js';
+import type { ResourceFormData } from '../types/index.js';
 
 export class ResourceController {
   static async createResource(req: Request, res: Response): Promise<Response | void> {
