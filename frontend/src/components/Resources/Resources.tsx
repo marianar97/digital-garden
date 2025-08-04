@@ -1,9 +1,10 @@
 import ResourceSelector from "../Search/ResourceSelector";
 import ResourceGrid from "./ResourceGrid";
 import { useState, useEffect, useRef } from "react";
-import { apiService, ApiResource } from "../../services/api";
+import { ApiResource } from "../../services/api";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useResources } from "@/contexts/ResourcesContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -181,10 +182,9 @@ export default function Resources({
 }: {
   SampleResources?: Resource[];
 }) {
+  const { resources: apiResources, loading, error, refreshResources } = useResources();
   const [resources, setResources] = useState<Resource[]>(SampleResources);
   const [filteredResources, setFilteredResources] = useState<Resource[]>(SampleResources);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
@@ -194,29 +194,21 @@ export default function Resources({
 
   // Fetch resources from API on component mount
   useEffect(() => {
-    const fetchResources = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const apiResources = await apiService.getResources();
-        console.log('apiResources', apiResources);
-        const convertedResources = apiResources.map(convertApiResource);
-        setResources(convertedResources);
-        console.log('convertedResources', convertedResources);
-        setFilteredResources(convertedResources);
-      } catch (err) {
-        console.error('Failed to fetch resources:', err);
-        setError('Failed to load resources from server. Using default resources.');
-        // Keep using default resources on error
-        setResources(SampleResources);
-        setFilteredResources(SampleResources);
-      } finally {
-        setLoading(false);
-      }
-    };
+    refreshResources();
+  }, [refreshResources]);
 
-    fetchResources();
-  }, [SampleResources]);
+  // Convert API resources to local format when they change
+  useEffect(() => {
+    if (apiResources.length > 0) {
+      const convertedResources = apiResources.map(convertApiResource);
+      setResources(convertedResources);
+      setFilteredResources(convertedResources);
+    } else if (error) {
+      // Fallback to default resources if API fails
+      setResources(SampleResources);
+      setFilteredResources(SampleResources);
+    }
+  }, [apiResources, error, SampleResources]);
 
   // Initialize entrance animations on mount - only once
   useEffect(() => {

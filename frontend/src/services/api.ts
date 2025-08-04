@@ -44,11 +44,13 @@ class ApiService {
     title: string;
     type: 'Video' | 'Article' | 'Book' | 'Tool';
     url: string;
+    tags?: string[];
   }): Promise<ApiResource> {
-    return this.request<ApiResource>('/api/resources', {
+    const response = await this.request<{ message: string; resource: ApiResource }>('/api/resources', {
       method: 'POST',
       body: JSON.stringify(data),
     });
+    return response.resource;
   }
 }
 

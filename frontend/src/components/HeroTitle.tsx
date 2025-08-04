@@ -3,6 +3,8 @@ import SplitText from "./TextAnimations/SplitText/SplitText";
 import { InteractiveHoverButton } from "./magicui/interactive-hover-button";
 import TagSelector from "./Search/TagSelector";
 import { motion } from "framer-motion";
+import { apiService } from "@/services/api";
+import { useResources } from "@/contexts/ResourcesContext";
 
 // Tag options for the form
 const availableTags = [
@@ -30,6 +32,7 @@ export default function HeroTitle({ onLetterAnimationComplete }: { onLetterAnima
     tags: [] as string[]
   });
   const [showButton, setShowButton] = useState(false);
+  const { addResource } = useResources();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -44,32 +47,25 @@ export default function HeroTitle({ onLetterAnimationComplete }: { onLetterAnima
     setSubmitMessage("");
 
     try {
-      const response = await fetch('https://digital-garden-0xlj.onrender.com/api/resources', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: formData.title,
-          type: formData.type.charAt(0).toUpperCase() + formData.type.slice(1),
-          url: formData.url,
-          tags: formData.tags
-        }),
+      const newResource = await apiService.createResource({
+        title: formData.title,
+        type: formData.type as 'Video' | 'Article' | 'Book' | 'Tool',
+        url: formData.url,
+        tags: formData.tags
       });
 
-      if (response.ok) {
-        setSubmitMessage("🌱 Resource planted successfully!");
-        setFormData({ title: "", type: "", url: "", tags: [] });
-        setTimeout(() => {
-          setDialogOpen(false);
-          setSubmitMessage("");
-        }, 2000);
-      } else {
-        const errorData = await response.json();
-        setSubmitMessage(`Error: ${errorData.error || 'Failed to plant resource'}`);
-      }
+      // Add the new resource to the global state for immediate display
+      addResource(newResource);
+      
+      setSubmitMessage("🌱 Resource planted successfully!");
+      setFormData({ title: "", type: "", url: "", tags: [] });
+      setTimeout(() => {
+        setDialogOpen(false);
+        setSubmitMessage("");
+      }, 2000);
     } catch (error) {
-      setSubmitMessage("Error: Unable to connect to server");
+      console.error('Failed to create resource:', error);
+      setSubmitMessage("Error: Unable to plant resource");
     } finally {
       setIsSubmitting(false);
     }
