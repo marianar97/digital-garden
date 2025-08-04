@@ -108,6 +108,9 @@ firebase-debug.*.log
 
 # TypeScript
 *.tsbuildinfo
+__pycache__/
+venv/
+env/
 
 # Package manager lock files (keep one, comment others if needed)
 # yarn.lock
