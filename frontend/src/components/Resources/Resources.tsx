@@ -1,12 +1,9 @@
 import ResourceSelector from "../Search/ResourceSelector";
 import ResourceGrid from "./ResourceGrid";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { ApiResource } from "../../services/api";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion } from "framer-motion";
 import { useResources } from "@/contexts/ResourcesContext";
-
-gsap.registerPlugin(ScrollTrigger);
 
 enum ResourceType {
   VIDEO = "Video",
@@ -177,6 +174,7 @@ const defaultResources: Resource[] = [
   },
 ];
 
+
 export default function Resources({
   SampleResources = defaultResources,
 }: {
@@ -185,12 +183,6 @@ export default function Resources({
   const { resources: apiResources, loading, error, refreshResources } = useResources();
   const [resources, setResources] = useState<Resource[]>(SampleResources);
   const [filteredResources, setFilteredResources] = useState<Resource[]>(SampleResources);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const selectorRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
-  const errorRef = useRef<HTMLDivElement>(null);
-  const hasAnimated = useRef(false);
 
   // Fetch resources from API on component mount
   useEffect(() => {
@@ -209,76 +201,6 @@ export default function Resources({
       setFilteredResources(SampleResources);
     }
   }, [apiResources, error, SampleResources]);
-
-  // Initialize entrance animations on mount - only once
-  useEffect(() => {
-    if (hasAnimated.current || loading) return;
-
-    // Set hasAnimated immediately to prevent double animations
-    hasAnimated.current = true;
-
-    // Use setTimeout to ensure DOM is fully rendered
-    const timeoutId = setTimeout(() => {
-      if (!containerRef.current || !selectorRef.current || !gridRef.current) return;
-
-      const tl = gsap.timeline();
-
-      // Animate container with fade in and slight slide up
-      tl.fromTo(containerRef.current,
-        {
-          opacity: 0,
-          y: 30,
-          scale: 0.98
-        },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.8,
-          ease: "power2.out"
-        }
-      )
-        // Then stagger animation for selector and grid
-        .fromTo([selectorRef.current, gridRef.current],
-          {
-            opacity: 0,
-            y: 20
-          },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.2,
-            ease: "power2.out"
-          },
-          "-=0.3" // Start slightly before container animation finishes
-        );
-    }, 0);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [loading]); // Only trigger when loading state changes
-
-  // Animate error message
-  useEffect(() => {
-    if (!errorRef.current || !error) return;
-
-    gsap.fromTo(errorRef.current,
-      {
-        opacity: 0,
-        y: -10,
-        scale: 0.95
-      },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.5,
-        ease: "back.out(1.7)"
-      }
-    );
-  }, [error]);
 
   // Handle resource type change
   const handleTypeChange = (type: string) => {
@@ -315,37 +237,55 @@ export default function Resources({
   };
 
   return (
-    <div
-      ref={containerRef}
+    <motion.div
+      initial={{ opacity: 0, y: 30, scale: 0.98 }}
+      animate={loading ? { opacity: 0, y: 30, scale: 0.98 } : { opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.1, ease: "anticipate" }}
       className="flex flex-col w-full md:w-[90%] border-none rounded-lg items-start"
     >
       {error && (
-        <div
-          ref={errorRef}
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.1, type: "spring", damping: 15, stiffness: 300 }}
           className="w-full mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded"
         >
           {error}
-        </div>
+        </motion.div>
       )}
 
-      <div ref={selectorRef} className="w-full relative z-50">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.1, delay: 0.3, ease: "easeOut" }}
+        className="w-full relative z-50"
+      >
         <ResourceSelector
           onTypeChange={handleTypeChange}
           onSearch={handleSearch}
           onTagChange={handleTagChange}
           tags={Object.values(TagType)}
         />
-      </div>
+      </motion.div>
 
       {loading ? (
-        <div className="w-full flex justify-center items-center py-8">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="w-full flex justify-center items-center py-8"
+        >
           <div className="text-gray-500 animate-pulse">Loading resources...</div>
-        </div>
+        </motion.div>
       ) : (
-        <div ref={gridRef} className="w-full relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.1, delay: 0.5, ease: "easeOut" }}
+          className="w-full relative z-10"
+        >
           <ResourceGrid resources={filteredResources} />
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
