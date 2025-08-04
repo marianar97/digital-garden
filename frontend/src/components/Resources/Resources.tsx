@@ -18,7 +18,6 @@ enum TagType {
   HISTORY = "History",
   GROWTH = "Growth",
   DETERMINATION = "Determination",
-  ENTREPRENEURSHIP = "Entrepreneurship",
   COMMUNICATION = "Communication",
   PRODUCTIVITY = "Productivity",
   NEURODIVERSITY = "Neurodiversity",
@@ -71,7 +70,6 @@ const defaultResources: Resource[] = [
     image: "https://m.media-amazon.com/images/I/51zGCdRQXOL._SL1200_.jpg",
     url: "https://www.amazon.com/Zero-One-Notes-Startups-Future/dp/0804139296",
     tags: [
-      TagType.ENTREPRENEURSHIP,
       TagType.STARTUP,
     ],
     type: ResourceType.BOOK,
@@ -187,7 +185,7 @@ export default function Resources({
   const [filteredResources, setFilteredResources] = useState<Resource[]>(SampleResources);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -232,37 +230,37 @@ export default function Resources({
       if (!containerRef.current || !selectorRef.current || !gridRef.current) return;
 
       const tl = gsap.timeline();
-      
+
       // Animate container with fade in and slight slide up
-      tl.fromTo(containerRef.current, 
-        { 
-          opacity: 0, 
+      tl.fromTo(containerRef.current,
+        {
+          opacity: 0,
           y: 30,
           scale: 0.98
         },
-        { 
-          opacity: 1, 
+        {
+          opacity: 1,
           y: 0,
           scale: 1,
           duration: 0.8,
           ease: "power2.out"
         }
       )
-      // Then stagger animation for selector and grid
-      .fromTo([selectorRef.current, gridRef.current],
-        {
-          opacity: 0,
-          y: 20
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.2,
-          ease: "power2.out"
-        },
-        "-=0.3" // Start slightly before container animation finishes
-      );
+        // Then stagger animation for selector and grid
+        .fromTo([selectorRef.current, gridRef.current],
+          {
+            opacity: 0,
+            y: 20
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.2,
+            ease: "power2.out"
+          },
+          "-=0.3" // Start slightly before container animation finishes
+        );
     }, 0);
 
     return () => {
@@ -325,12 +323,12 @@ export default function Resources({
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="flex flex-col w-full md:w-[90%] border-none rounded-lg items-start"
     >
       {error && (
-        <div 
+        <div
           ref={errorRef}
           className="w-full mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded"
         >

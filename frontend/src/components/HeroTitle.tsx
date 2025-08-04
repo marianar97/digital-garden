@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 // Tag options for the form
 const availableTags = [
-  "History", "Growth", "Determination", "Entrepreneurship",
+  "History", "Growth", "Determination",
   "Communication", "Productivity", "Neurodiversity", "Startup",
   "Programming", "Curiosity"
 ];
