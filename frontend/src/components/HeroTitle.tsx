@@ -44,7 +44,7 @@ export default function HeroTitle({ onLetterAnimationComplete }: { onLetterAnima
     setSubmitMessage("");
 
     try {
-      const response = await fetch('http://localhost:3001/api/resources', {
+      const response = await fetch('https://digital-garden-0xlj.onrender.com/api/resources', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
